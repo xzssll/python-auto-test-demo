@@ -1,0 +1,29 @@
+login:
+  - name: "登录成功"
+    request:
+      url: "http://www.liuyanzu.tech/task/server/api/phone/login"
+      method: "post"
+      headers: {}
+      json:
+        phone: "19912341110"
+        code: "857850"
+    validate:
+      - eq: ["$.status", 200]
+      - eq: ["$.data.status", '1']
+      - eq: ["$..msg", "登陆成功"]
+      - eq: ["select phone from tb_user where phone = '${phone}' and status = 1",1,"${phone}"]
+   
+
+  - name: "验证码错误，登录失败"
+    request:
+      url: "http://www.liuyanzu.tech/task/server/api/phone/login"
+      method: "post"
+      headers: {}
+      json:
+        phone: "19912341110"
+        code: "85785 "
+    validate:
+      - eq: ["$.status", 401]
+      - eq: ["$..msg", "验证码不正确"]
+      - eq: ["select phone from tb_user where phone = '${phone}' and status = 1",1,"${phone}"]
+    

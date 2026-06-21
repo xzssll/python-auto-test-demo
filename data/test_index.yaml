@@ -1,0 +1,24 @@
+index:
+  - name: "获取列表任务数据成功"
+    request:
+      url: "http://www.liuyanzu.tech/task/server/api/get/tasklist/1/10"
+      method: "post"
+      headers:
+        token: ${token}
+      json:
+        sorttype: "money"
+    validate:
+      - eq: ["$.status", 200]
+      - eq: ["$..msg", "操作成功！"]
+
+  - name: "当前查询没有数据"
+    request:
+      url: "http://www.liuyanzu.tech/task/server/api/get/tasklist/10000/10"
+      method: "post"
+      headers:
+        token: ${token}
+      json:
+        sorttype: "money"
+    validate:
+      - eq: ["$.status", 401]
+      - eq: ["$..msg", "当前查询没有数据"]

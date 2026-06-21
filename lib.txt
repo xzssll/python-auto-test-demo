@@ -1,0 +1,13 @@
+pytest
+pytest-xdist
+pytest-rerunfailures
+pytest-html
+pytest-assume
+allure-pytest
+requests
+PyYAML
+loguru
+faker
+PyMySQL
+python-dotenv
+pydantic
