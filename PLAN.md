@@ -126,7 +126,8 @@
 - [x] Validator 断言器模式（eq/nq/iin/nni），接口断言 + DB断言分离
 - [x] HTTP Mock（responses.add_callback 按请求体动态返回）
 - [x] DB Mock（unittest.mock.patch 替换 pymysql 查询）
-- [x] **AI 辅助生成测试数据**（10条YAML用例：正常/异常/边界/安全，AI生成→人工review）
+- [x] AI 辅助生成测试数据（10条YAML用例：正常/异常/边界/安全，AI生成→人工review）
+- [x] **9 passed, 0 skipped, 0 error** — Mock 全场景覆盖
 - [ ] CI 流水线（GitHub Actions，push自动跑）
 - [ ] Allure 测试报告
 - [ ] AI 辅助测试实践文档（正式版）
