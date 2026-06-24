@@ -82,6 +82,7 @@ class Validator:
                         print("===响应数据校验通过===")
                     elif v[0].startswith("select"):
                         #  数据库校验
+
                         db_res = MysqlClient.query(v[0])
                         assert getattr(Validator,k)(len(db_res),v[1]),f"数据库未查到手机号为 {jp(data, '$..phone')[0]} 的数据，或查出多条！"
                         assert getattr(Validator,k)(db_res[0][0],v[2]),f"数据库中不存在phone = {jp(data, '$..phone')[0]}的账号！"

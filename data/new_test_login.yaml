@@ -1,0 +1,107 @@
+login:
+  - name: "登录成功"
+    request:
+      url: "http://www.liuyanzu.tech/task/server/api/phone/login"
+      method: "post"
+      headers: {}
+      json:
+        phone: "19912341110"
+        code: "857850"
+    validate:
+      - eq: ["$.status", 200]
+      - eq: ["$.data.status", "1"]
+      - eq: ["$.msg", "登陆成功"]
+      - eq: ["select phone from tb_user where phone = '${phone}' and status = 1", 1, "${phone}"]
+
+  - name: "验证码错误，登录失败"
+    request:
+      url: "http://www.liuyanzu.tech/task/server/api/phone/login"
+      method: "post"
+      headers: {}
+      json:
+        phone: "19912341110"
+        code: "85785a"
+    validate:
+      - eq: ["$.status", 401]
+      - eq: ["$.msg", "验证码不正确"]
+
+  - name: "手机号未注册-服务端当作成功处理"
+    request:
+      url: "http://www.liuyanzu.tech/task/server/api/phone/login"
+      method: "post"
+      headers: {}
+      json:
+        phone: "19999999999"
+        code: "857850"
+    validate:
+      - eq: ["$.status", 200]
+      - eq: ["$.msg", "登陆成功"]
+
+  - name: "手机号格式错误-非11位-服务端当作成功处理"
+    request:
+      url: "http://www.liuyanzu.tech/task/server/api/phone/login"
+      method: "post"
+      headers: {}
+      json:
+        phone: "1991234"
+        code: "857850"
+    validate:
+      - eq: ["$.status", 200]
+      - eq: ["$.msg", "登陆成功"]
+
+  - name: "字段缺失-缺code"
+    request:
+      url: "http://www.liuyanzu.tech/task/server/api/phone/login"
+      method: "post"
+      headers: {}
+      json:
+        phone: "19912341110"
+    validate:
+      - eq: ["$.status", 401]
+      - eq: ["$.msg", "参数不对"]
+
+  - name: "SQL注入-phone注入-服务端校验存在漏洞"
+    request:
+      url: "http://www.liuyanzu.tech/task/server/api/phone/login"
+      method: "post"
+      headers: {}
+      json:
+        phone: "1991234111' OR '1'='1"
+        code: "857850"
+    validate:
+      - eq: ["$.status", 200]
+      - eq: ["$.msg", "登陆成功"]
+
+  - name: "请求体非JSON"
+    phone: "19912341110"
+    request:
+      url: "http://www.liuyanzu.tech/task/server/api/phone/login"
+      method: "post"
+      headers: 
+        Content-Type: "text/plain"
+      data: "phone=19912341110&code=857850"
+    validate:
+      - eq: ["$.status", 401]
+      - eq: ["$.msg", "服务器异常，请联系管理员"]
+
+  - name: "HTTP方法错-GET请求"
+    phone: "19912341110"
+    request:
+      url: "http://www.liuyanzu.tech/task/server/api/phone/login"
+      method: "get"
+      headers: {}
+    validate:
+      - eq: ["$.status", 401]
+      - eq: ["$.msg", "405 Method Not Allowed: The method is not allowed for the requested URL."]
+
+  - name: "HTTP方法错-PUT请求"
+    request:
+      url: "http://www.liuyanzu.tech/task/server/api/phone/login"
+      method: "put"
+      headers: {}
+      json:
+        phone: "19912341110"
+        code: "857850"
+    validate:
+      - eq: ["$.status", 401]
+      - eq: ["$.msg", "405 Method Not Allowed: The method is not allowed for the requested URL."]

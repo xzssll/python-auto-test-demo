@@ -65,7 +65,7 @@ class TestLogin:
     #                     # 数据库校验
     #                     pass
     
-    file_path = os.path.join(os.path.dirname(__file__), "../../data/test_login.yaml")
+    file_path = os.path.join(os.path.dirname(__file__), "../../data/new_test_login.yaml")
     datas = Yamloader().yamloader(file_path)["login"]
     # @pytest.mark.parametrize("data",datas)
     # def test_login(self,data):

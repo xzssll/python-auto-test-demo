@@ -26,4 +26,8 @@ login:
       - eq: ["$.status", 401]
       - eq: ["$..msg", "验证码不正确"]
       - eq: ["select phone from tb_user where phone = '${phone}' and status = 1",1,"${phone}"]
-    
+
+
+  
+
+
