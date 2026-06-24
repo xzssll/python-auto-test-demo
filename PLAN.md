@@ -142,19 +142,75 @@
 **真相**：`request` 是 HTTP `PreparedRequest` 对象，结构完全不同：
 
 ```
-request.method    → "POST" / "GET" / "PUT" ...
-request.body      → b'{"phone":"...","code":"..."}'（bytes）
+request.method    → "POST" / "GET" / "PUT" ...（大写！）
+request.body      → b'{"phone":"...","code":"..."}'（bytes，可能为空）
 request.headers   → {'Content-Type': 'application/json'}
+request.url       → 'http://...'
+request.path_url  → '/task/server/api/phone/login'
 ```
 
 不是 `request.body["request"]["method"]`，是 `request.method`。
 不是 `json.loads(request)`，是 `json.loads(request.body)`。
 
-**教训**：不确定参数类型时，`print(type(x))` 比其他都可靠。
+**教训**：
+- 不确定参数类型 → `print(type(x))` + `print(dir(x))` 看清楚
+- `request.method` 返回大写（`"POST"`），用小写判断会不匹配
+- `request.body` 可能是 `None`（GET请求）或 form-encoded字符串（非JSON），`json.loads` 前必须判空+判格式
+- 慢就慢，print 调试比猜着写快
+
+### 坑2：`json.loads()` 放到最后，不是最前
+
+**错误**：所有请求先 `json.loads`，再判断 method/Content-Type
+**真相**：非 POST 请求的 body 为空或非 JSON → 直接崩在解析那行，后面的判断永远走不到
+
+**正确做法**：
+```
+1. 先判断 method
+2. 再判断 body 格式
+3. 最后才 json.loads（只处理真正的 JSON POST 请求）
+```
+
+### 坑3：`body.get("code", "")` 把"不存在"和"空字符串"混成一件事
+
+**错误**：`.get("code", "")` 缺失时返回 `""`，和 code 为空串无法区分
+**真相**：缺 code 应返回"参数不对"，code 错误应返回"验证码不正确"——两类场景
+**修复**：把缺 code 的判断提到 code 错误判断之前
+
+### 坑4：Windows下 `request.body` 可能是 str 不是 bytes
+
+**错误**：`request.body.startswith(b"phone=")`
+**真相**：Windows 的 requests 库有时 body 是 str 类型，`str.startswith(bytes)` 报 TypeError
+**修复**：`str(request.body).startswith("phone=")`，兼容两种类型
 
 ---
 
 ## 八、周报模板
+
+---
+
+## 九、技术踩坑记录（面试可讲）
+
+（内容见上）
+
+---
+
+## 十、6/24 当日总结：用户自我复盘
+
+### 心路历程
+- 不知道 `request` 是 `PreparedRequest` 类对象，不是 YAML 字典
+- 不知道 `request` 包含 headers/body/method/url 等属性，以及用 `.` 取值的方法
+- 取出来的数据格式不确定（method 是大写、body 可能是 None/str/bytes），判断时容易出错
+- 学会了用 `print(type(x))` + `print(dir(x))` 逐步调试，虽然慢但有效
+- 自主写代码太少，逻辑漏洞多，调试耗时长
+
+### 核心收获
+1. `request` 是 HTTP 请求对象，属性用 `.` 访问，跟 YAML 字典完全不是一回事
+2. `json.loads()` 必须放到分支过滤之后执行，不是第一行
+3. `print(type(x))` 是最可靠的调试起点
+4. 代码跑通了 ≠ 全理解了，明日需要花时间捋清楚每一行
+
+### 明天（6/25）计划
+**先捋，再写。** 把 conftest.py 的 `_login_callback` 逐行理解透彻，再做 README。
 
 ```
 【第N周 周报 — 日期：______】
