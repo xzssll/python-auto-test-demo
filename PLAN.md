@@ -183,6 +183,24 @@ request.path_url  → '/task/server/api/phone/login'
 **真相**：Windows 的 requests 库有时 body 是 str 类型，`str.startswith(bytes)` 报 TypeError
 **修复**：`str(request.body).startswith("phone=")`，兼容两种类型
 
+### 坑5：`dict.get(key)` vs `dict.get(key, default)` 的区别
+
+**错误**：`.get("code", "")` 把缺失伪装成空字符串，无法区分"缺字段"和"值错误"
+
+**真相**：
+```
+dict.get("key")        → key不存在返回 None
+dict.get("key", "xx")  → key不存在返回默认值 "xx"
+```
+data4 的请求体 `{"phone":"..."}` 没有 code 字段：
+- `.get("code")` → `None` → 能判断缺失 ✅
+- `.get("code", "")` → `""` → 和空值混在一起，无法区分 ❌
+
+**教训**：
+- 需要区分"缺失"和"值错误"时，用 `.get(key)` 不加默认值
+- 需要给缺失字段兜底值时，用 `.get(key, default)`
+- 查 Python 自带方法：`print(dir({}))` + `help({}.get)` 比文档快
+
 ---
 
 ## 八、周报模板
