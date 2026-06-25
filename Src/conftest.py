@@ -91,7 +91,7 @@ def _login_callback(request):
     elif request.method != "POST":
         return (200, {}, json.dumps({
             'data': None,
-            'msg': '404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.',
+            'msg': '405 Method Not Allowed: The method is not allowed for the requested URL.',
             'status': 401
         }))
 

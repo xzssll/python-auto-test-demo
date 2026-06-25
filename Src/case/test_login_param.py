@@ -91,5 +91,7 @@ class TestLogin:
         replace_phone = jp(data,'$..phone')[0]
         new_data = replace_dynamic_params(data,{"phone":replace_phone})
         resp = requests.request(**new_data["request"])
+        print(resp.json())
+        print(type(resp.json()))
         Validator().validate(new_data,resp)
         print (f"用例名称===",new_data["name"])
