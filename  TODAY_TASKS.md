@@ -1,21 +1,81 @@
-# 6/27 周六 — 今日任务（修正版）
+# 6/27 周六 — 优化步骤清单
 
-> 周六只是补周五的 Mock 笔记。别的事不带。
-
----
-
-| 序号 | 任务 | 具体操作 | 预计 | 状态 |
-|------|------|---------|------|------|
-| 1 | Mock 理解笔记 | 新建 `notes/mock.md`，用自己的话写清楚 Mock 是什么、怎么实现的、踩了什么坑 | 1h | [ ] |
-| 2 | Git commit | `git add . && git commit -m "docs: Mock理解笔记"` | 2min | [ ] |
+> Mock 笔记延后到项目收尾。今天做这 4 项。
 
 ---
 
-## Mock 笔记可以按这个结构写
+| 序号 | 做什么 | 具体操作 | 预计 | [ ] |
+|------|--------|---------|------|-----|
+| 1 | 清注释 | 删掉 `test_login_param.py` 第17-88行被注释的旧代码；删掉 `conftest.py` 第20-37行注释的旧版 `_login_callback` | 15min | [ ] |
+| 2 | 装 loguru | 终端执行 `pip install loguru` | 1min | [ ] |
+| 3 | 写 logger.py | IDE 新建 `Src/utils/logger.py`，复制 TODAY_TASKS.md 里的代码块A；把 `validator.py` 和 `conftest.py` 里的 `print()` 换成 `logger.info()` | 20min | [ ] |
+| 4 | 写 httprequest.py | IDE 新建 `Src/utils/httprequest.py`，复制 TODAY_TASKS.md 里的代码块B；把 `test_login_param.py` 里的 `requests.request(...)` 换成 `http_request.request(...)` | 15min | [ ] |
+| 5 | 写 README.md | 按项目结构/技术栈/如何运行三块写，30行即可 | 30min | [ ] |
+| 6 | 跑通 | `pytest Src/case/test_login_param.py -v` → 9 passed | 2min | [ ] |
 
-1. **Mock 解决什么问题** — 没有 Mock 时项目依赖什么？为什么被拉黑了就跑不了？
-2. **怎么实现的** — `responses.RequestsMock` 做什么？`_login_callback` 做什么？`add_callback` 和 `add` 有什么区别？
-3. **踩过的坑** — 贴上 PLAN.md 里的 5 个坑就行（那些都是你的素材）
-4. **mock_db 同理** — `unittest.mock.patch` 做了什么？
+---
 
-写多少算多少，写完发我。
+## 代码块A：`Src/utils/logger.py`
+
+```python
+from loguru import logger as logutil
+from datetime import datetime
+
+
+class Logger:
+    def __init__(self, log_file=''):
+        self.logger = logutil
+        if log_file:
+            self.logger.add(log_file, encoding="utf-8")
+
+    def info(self, msg):
+        self.logger.info(msg)
+
+    def success(self, msg):
+        self.logger.success(msg)
+
+    def error(self, msg):
+        self.logger.error(msg)
+
+    def warning(self, msg):
+        self.logger.warning(msg)
+
+
+log_file = f'log/{datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}-log.log'
+logger = Logger(log_file=log_file)
+```
+
+## 代码块B：`Src/utils/httprequest.py`
+
+```python
+import requests
+
+
+class HttpRequest:
+
+    def __init__(self):
+        self.session = requests.session()
+
+    def get(self, url, **kwargs):
+        return self.session.request("get", url=url, **kwargs)
+
+    def post(self, url, **kwargs):
+        return self.session.request("post", url=url, **kwargs)
+
+    def put(self, url, **kwargs):
+        return self.session.request("put", url=url, **kwargs)
+
+    def request(self, method, url, **kwargs):
+        return self.session.request(method, url=url, **kwargs)
+
+    def __del__(self):
+        self.session.close()
+
+
+http_request = HttpRequest()
+```
+
+## 改法示例
+
+原来：`resp = requests.request(**new_data["request"])`
+改为：`from Src.utils.httprequest import http_request` + `resp = http_request.request(**new_data["request"])`
