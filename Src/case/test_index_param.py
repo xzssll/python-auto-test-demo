@@ -29,5 +29,6 @@ class TestIndex:
         print(new_data)
         resp = requests.request(**new_data["request"])
         # print(resp)
+        
         Validator().validate(new_data,resp)
         print (f"用例名称===",new_data["name"])

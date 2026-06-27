@@ -17,9 +17,6 @@ def get_token(request):
 
 def _login_callback(request):
     """[用户原创版本 - 仅做2处修正：过滤前置 + .get(code)去默认值]"""
-    print(type(request))
-    print(request.method)
-    print("=====================================================================================================")
 
     # 修正1：method/body 过滤放到 json.loads 之前
     if request.method.upper() != "POST":

@@ -12,6 +12,8 @@ from Src.utils.validator import Validator
 from Src.utils.yamloader import Yamloader
 from Src.utils.handle_data import replace_dynamic_params
 from Src.utils.mysql_client import MysqlClient
+from Src.utils.logger import logger
+from Src.utils.httprequest import http_request
 
 class TestLogin:
     # datas = [
@@ -86,12 +88,23 @@ class TestLogin:
     #     resp = requests.request(**new_data["request"])
     #     Validator().validate(new_data,resp)
     #     print (f"用例名称===",new_data["name"])
+
+    # 优化
+    # @pytest.mark.parametrize("data",datas)
+    # def test_login(self,data,mock_api,mock_db):
+    #     replace_phone = jp(data,'$..phone')[0]
+    #     new_data = replace_dynamic_params(data,{"phone":replace_phone})
+    #     resp = requests.request(**new_data["request"])
+    #     Validator().validate(new_data,resp)
+    #     Logger().info(f"用例名称===",new_data["name"])
+
+# 再优化
+
     @pytest.mark.parametrize("data",datas)
     def test_login(self,data,mock_api,mock_db):
         replace_phone = jp(data,'$..phone')[0]
         new_data = replace_dynamic_params(data,{"phone":replace_phone})
-        resp = requests.request(**new_data["request"])
-        print(resp.json())
-        print(type(resp.json()))
+        resp = http_request.request(**new_data["request"])
+        logger.info(f"****开始断言****")
         Validator().validate(new_data,resp)
-        print (f"用例名称===",new_data["name"])
+        logger.info(f"用例名称==={new_data['name']}执行成功\n<end>")
