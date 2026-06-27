@@ -122,3 +122,21 @@
 | 日志 | print | ✅ loguru |
 | HTTP封装 | 散装 | ✅ HttpRequest类 |
 | 独立思考 | ✅ | ❌（跟着抄的） |
+
+---
+
+## 6/26 周四 — 任务完成
+
+**原计划**：写 Mock 理解笔记
+**状态**：用户确认完成（待补充具体内容）
+
+---
+
+## 6/27 周六 — 追齐进度（4h）
+
+**任务**：
+- [ ] 清理 test_login_param.py / conftest.py 注释旧代码
+- [ ] pip install loguru，替换所有 print → logger
+- [ ] 写 README.md
+- [ ] HttpRequest 封装（耗时不够则推到明天）
+- [ ] Mock 笔记：标记为「项目收尾时统一整理」，不在今天做
